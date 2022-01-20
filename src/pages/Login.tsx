@@ -3,7 +3,6 @@ import { Input } from "../components/input";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useState } from "react";
 import { useAuth } from "../providers/AuthProviders";
 
 const signInSchema = yup.object().shape({
@@ -17,7 +16,6 @@ interface signInData {
 }
 
 const Login = () => {
-  const [loading, setLoading] = useState(false);
   const { signIn, goTo } = useAuth();
   const {
     formState: { errors },
@@ -26,7 +24,6 @@ const Login = () => {
   } = useForm<signInData>({ resolver: yupResolver(signInSchema) });
 
   const handleSignIn = (data: signInData) => {
-    setLoading(true);
     signIn(data);
   };
 
@@ -63,7 +60,6 @@ const Login = () => {
           />
           <Button
             type="submit"
-            isLoading={loading}
             bgColor={"green.1"}
             width={"100%"}
             h={"60px"}
