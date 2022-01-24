@@ -7,7 +7,7 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 interface UserLogin {
-  name: string;
+  email: string;
   password: string;
 }
 interface UserRegister {
@@ -22,6 +22,7 @@ interface AuthProviderData {
   Logout: () => void;
   goTo: (page: string) => void;
   Register: (userdata: UserRegister) => void;
+  loginErr: string;
 }
 const AuthContext = createContext<AuthProviderData>({} as AuthProviderData);
 
@@ -35,16 +36,18 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const [authToken, setAuthToken] = useState(
     () => localStorage.getItem("token") || ""
   );
+  const [loginErr, setLoginErr] = useState("");
 
   const signIn = (userData: UserLogin) => {
     api
       .post("login", userData)
       .then((response) => {
-        localStorage.setItem("token", response.data.token);
-        setAuthToken(response.data.token);
+        localStorage.setItem("token", response.data);
+        setAuthToken(response.data);
+        setLoginErr("");
         history.push("/home");
       })
-      .catch((err) => err);
+      .catch((err) => setLoginErr(err));
   };
 
   const Register = (userData: UserRegister) => {
@@ -67,7 +70,9 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ authToken, Logout, signIn, goTo, Register }}>
+    <AuthContext.Provider
+      value={{ authToken, Logout, signIn, goTo, Register, loginErr }}
+    >
       {children}
     </AuthContext.Provider>
   );

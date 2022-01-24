@@ -6,17 +6,17 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useAuth } from "../providers/AuthProviders";
 
 const signInSchema = yup.object().shape({
-  name: yup.string().required("Nome obrigatorio"),
+  email: yup.string().required("email obrigatorio").email("email obrigatorio"),
   password: yup.string().required("Senha obrigatoria"),
 });
 
 interface signInData {
-  name: string;
+  email: string;
   password: string;
 }
 
 const Login = () => {
-  const { signIn, goTo } = useAuth();
+  const { signIn, goTo, loginErr } = useAuth();
   const {
     formState: { errors },
     register,
@@ -44,12 +44,17 @@ const Login = () => {
         padding={"30px 15px"}
       >
         <Heading fontSize={"24px"}>Login</Heading>
+        {loginErr && (
+          <Text color={"red.2"} fontSize={"20px"}>
+            Email ou Senha Invalidos
+          </Text>
+        )}
         <VStack spacing={"5"} mt={"4"}>
           <Input
-            placeholder="digite seu nome"
-            label={"Nome"}
-            error={errors.name}
-            {...register("name")}
+            placeholder="digite seu email"
+            label={"Email"}
+            error={errors.email}
+            {...register("email")}
           />
           <Input
             placeholder="digite sua senha"
