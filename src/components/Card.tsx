@@ -1,12 +1,23 @@
 import { Image, Grid, Text, Button, VStack, Heading } from "@chakra-ui/react";
+import { useCart } from "../providers/CartProviders";
+interface Product {
+  ProductId: number;
+  name: string;
+  category: string;
+  price: number;
+  img: string;
+}
 interface CardProps {
   flaver: string;
   type: string;
   price: number;
   image: string;
   key: number;
+  product: Product;
 }
-const Card = ({ key, image, flaver, type, price }: CardProps) => {
+
+const Card = ({ key, image, flaver, type, price, product }: CardProps) => {
+  const { addToCart } = useCart();
   return (
     <Grid
       padding={"0px 20px"}
@@ -29,6 +40,7 @@ const Card = ({ key, image, flaver, type, price }: CardProps) => {
       </Text>
       <Text mb={"5px"} color={"green.1"}>{`R$ ${price}.00`}</Text>
       <Button
+        onClick={() => addToCart(product)}
         mb={"10px"}
         h={"40px"}
         w={"110px"}

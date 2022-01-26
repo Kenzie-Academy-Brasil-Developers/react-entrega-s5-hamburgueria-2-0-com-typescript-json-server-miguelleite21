@@ -56,8 +56,8 @@ const Register = () => {
         pr={["0px", "0px", "150px", "150px"]}
         mb={["0px", "0px", "200px", "200px"]}
       >
-        <Heading as="h1" color={"gray.3"}>
-          Burguer kenzie
+        <Heading as="h1" color={"gray.3"} fontSize={"24px"} display={"flex"}>
+          Burguer <Text color={"red.2"}> kenzie</Text>
         </Heading>
         <Text color={"gray.2"}>
           A vida é como um sanduíche, é preciso

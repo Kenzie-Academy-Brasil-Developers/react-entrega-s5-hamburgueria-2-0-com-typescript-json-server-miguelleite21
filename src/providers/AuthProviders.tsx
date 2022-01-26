@@ -36,6 +36,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const [authToken, setAuthToken] = useState(
     () => localStorage.getItem("token") || ""
   );
+
   const [loginErr, setLoginErr] = useState("");
 
   const signIn = (userData: UserLogin) => {

@@ -1,6 +1,6 @@
 import { useState, ReactNode, createContext, useContext } from "react";
+
 import { api } from "../services/api";
-import { useAuth } from "./AuthProviders";
 
 interface CartProviderProps {
   children: ReactNode;
@@ -11,6 +11,7 @@ interface Product {
   category: string;
   price: number;
   img: string;
+  qnt?: number;
 }
 
 interface CartProviderData {
@@ -18,7 +19,9 @@ interface CartProviderData {
   cart: Product[];
   getProducts: () => void;
   filterProducts: (filter: string) => void;
-  getCart: () => void;
+  addToCart: (product: Product) => void;
+  removeAll: () => void;
+  removeToCart: (product: Product) => void;
 }
 const CartContext = createContext<CartProviderData>({} as CartProviderData);
 
@@ -27,9 +30,11 @@ const useCart = () => {
   return context;
 };
 const CartProvider = ({ children }: CartProviderProps) => {
-  const { authToken } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
-  const [cart, setCart] = useState<Product[]>([]);
+
+  const [cart, setCart] = useState<Product[]>(
+    JSON.parse(localStorage.getItem("cart") || "[]")
+  );
 
   const getProducts = () => {
     api
@@ -52,26 +57,37 @@ const CartProvider = ({ children }: CartProviderProps) => {
       getProducts();
     }
   };
-  const getCart = () => {
-    api
-      .get("cart")
-      .then((response) => {
-        setCart(response.data);
-      })
-      .catch((err) => err);
+
+  const addToCart = (product: Product) => {
+    setCart([...cart, product]);
+    localStorage.setItem("cart", JSON.stringify([...cart, product]));
   };
 
-  /*
-  const addToCart = (product: Product) => {
-    api
-      .post("cart", products, authToken)
-      .then((response) => console.log(1))
-      .catch((err) => console.log(err));
+  const removeAll = () => {
+    setCart([]);
+    localStorage.setItem("cart", JSON.stringify([]));
+    console.log(cart);
   };
-*/
+  const removeToCart = (product: Product) => {
+    const index = cart.indexOf(product);
+    const newCart = cart.filter((productOnCart, i) => i !== index);
+    setCart(newCart);
+    console.log(cart);
+
+    localStorage.setItem("@kenzieshop:cart", JSON.stringify(newCart));
+  };
+
   return (
     <CartContext.Provider
-      value={{ getProducts, filterProducts, getCart, products, cart }}
+      value={{
+        getProducts,
+        filterProducts,
+        addToCart,
+        removeAll,
+        removeToCart,
+        products,
+        cart,
+      }}
     >
       {children}
     </CartContext.Provider>
@@ -79,3 +95,34 @@ const CartProvider = ({ children }: CartProviderProps) => {
 };
 
 export { CartProvider, useCart };
+//função de adicionar quantidade de item
+/* if (cart.some((item) => item.ProductId === product.ProductId)) {
+      const oldProduct = cart.find(
+        (item) => item.ProductId === product.ProductId
+      );
+      const index = cart.indexOf(product);
+      const newCart = cart.filter((productOnCart, i) => i !== index);
+      let qnt = 0;
+      if (oldProduct?.qnt) {
+        qnt = oldProduct.qnt;
+        qnt++;
+      } else {
+        qnt = 0;
+      }
+
+      let newProduct = {
+        ProductId: oldProduct?.ProductId,
+        name: oldProduct?.name,
+        category: oldProduct?.category,
+        price: oldProduct?.price,
+        img: oldProduct?.img,
+        qnt: qnt,
+      };
+      setCart([...newCart, newProduct]);
+      localStorage.setItem("cart", JSON.stringify([...newCart, newProduct]));
+      console.log(newProduct);
+    } else {
+      setCart([...cart, product]);
+      localStorage.setItem("cart", JSON.stringify([...cart, product]));
+    }
+  };*/
